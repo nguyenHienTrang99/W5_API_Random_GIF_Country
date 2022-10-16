@@ -1,11 +1,11 @@
-var bigEnough = 3.0; // GIF hiển thị tới mức này thì hiển thị GIF mới 
-var maxImageScale = 15.0; // Tới hạn độ lớn của một GIF 
-let randomTag = false; // Tìm kiếm với 1 thẻ cụ thể 
+var bigEnough = 3.0; // size of GIF being displayed before new GIF appears 
+var maxImageScale = 15.0; // GIF maximum size
+let randomTag = false; 
 let currentTag = 0 ;
 var frameSkip = 0;
 const api = "https://api.giphy.com/v1/stickers/search?&api_key=";
 const apiKey = ["Ln1OMDKTMpwmS1AX3OnlmVBfPsuSEkje", "A6MgOoK9jJ0wFHnuM3rI9GzXLkrmAChZ", "cSsLBM6hA6jGEF5CySVunnXgEviMsWwF", "fpK8CwaWa9vraD6NFgEAjHMfnOTgvhZr"];
-let sequentialDL = false; // Tải GIF ở chế độ nền 
+let sequentialDL = false; // load GIF
 let query;
 let currentKey = 3;
 let timer = 0;
@@ -24,7 +24,7 @@ let erasedLoadMsg = false;
 let msgFade, msgDiv;
 let loadAnother = false,
     loadDelay = 0;
-let tag = ["VietNam","Japan","American","Brazil"];
+let tag = ["VietNam","Japan","American","Brazil"];// 4 countries that GIFs display
 let btn;
 function setup() {
     // createCanvas(windowWidth, windowHeight);
@@ -58,32 +58,32 @@ function draw() {
     }
 
 
-    if (GIFsLoaded > (sequentialDL ? 0 : 49)) { // Nếu tải đủ ảnh 
+    if (GIFsLoaded > (sequentialDL ? 0 : 49)) { // If GIFs are loaded enough
         if (!erasedLoadMsg) {
             background('gray');
-            tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]); // Lấy GIF đầu tiên 
+            tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]); // Get the first GIF
             GIFs.push(tempGIF);
             erasedLoadMsg = true;
-            keyTyped(); // Hiển thị các lần nhấn phím hợp lệ 
+            keyTyped(); // Display the time that key is correctly pressed 
         }
 
         if (GIFs.length > 0) {
             if (GIFs[GIFs.length - 1].scale > bigEnough && 
-                GIFs[GIFs.length - 1].scale < bigEnough + 0.2) { // Khi GIF gần nhất đủ lớn 
+                GIFs[GIFs.length - 1].scale < bigEnough + 0.2) { // When latest GIF is big enough 
                 GIFnum = ++GIFnum % loadedImages.length;
                 tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]);
-                GIFs.push(tempGIF); // Thêm 1 GIF khác ra màn hình 
+                GIFs.push(tempGIF); // Add new GIF
             }
-        } else { // Nếu không GIF nào đang chạy 
+        } else { // If no GIF is loading 
             GIFnum = ++GIFnum % loadedImages.length;
             tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]);
-            GIFs.push(tempGIF); // Thêm 1 GIF khác vào màn hình 
+            GIFs.push(tempGIF); // Add 1 more GIF on screen 
         }
         if (frameSkip < 2 || frameCount % frameSkip == 0) {
             if (GIFs.length > 0) {
                 for (let i = 0; i < GIFs.length; i++) {
-                    if (GIFs[i].fade <= 0) { // GIF đủ lớn cho mờ dần
-                        GIFs.shift(); // Xóa GIF cũ nhất đang hiển thị 
+                    if (GIFs[i].fade <= 0) { // Fading if GIF is big enough
+                        GIFs.shift(); // Delete the latest GIF on screen
                     } else {
                         GIFs[i].update();
                         GIFs[i].draw();
@@ -95,25 +95,25 @@ function draw() {
     showMsg();
 }
 
-function getJSON() { // Nhận gif API 
+function getJSON() { // receive API gif
     offset = int(random(100));
     let url = api + apiKey[currentKey] + "&offset=" + offset + "&q=" + query; // Gọi API 
     GIFsLoaded = 0;
-    loadJSON(url, gotData, loadError); // gotData được gọi khi API phản hồi
+    loadJSON(url, gotData, loadError); // gotData is called when API reacts
 }
 
-function gotData(giphy) { //hàm này được gọi sau khi loadJSON kết thúc
+function gotData(giphy) { //function is called when loadJSON ends 
     GIFurls = [];
-    for (let i = 0; i < giphy.data.length; i++) { // Xuất tất cả URL GIF vào mảng GIFurls
+    for (let i = 0; i < giphy.data.length; i++) { // Export all URL GIF into GIFurls 
         GIFurls.push(giphy.data[i].images.fixed_height.url);
         if (!sequentialDL)
-            loadImage(GIFurls[GIFurls.length - 1], gotGIF, loadError); //tải xuống GIF khinhận được URL
+            loadImage(GIFurls[GIFurls.length - 1], gotGIF, loadError); //download GIF when recieve URL 
     }
-    GIFsLoaded = 0; // Tại thời điểm này, không có GIF nào được tải xuống - khi mỗi tệp đến, gotGIF được gọi
-    if (sequentialDL) loadImage(GIFurls[GIFsLoaded], gotGIF, loadError); // chỉ tải xuống GIF đầu tiên
+    GIFsLoaded = 0; 
+    if (sequentialDL) loadImage(GIFurls[GIFsLoaded], gotGIF, loadError); // download the first GIF
 }
 
-function gotGIF(giphyImg) { // hàm này được gọi sau mỗi lần loadImage kết thúc
+function gotGIF(giphyImg) { // this function is called after loadImage ends 
     if (GIFsLoaded == 0 && loadedImages.length >= 50) loadedImages = [];
     if (GIFsLoaded < 50 && loadedImages.length >= 50) {
         loadedImages[GIFsLoaded] = giphyImg;
