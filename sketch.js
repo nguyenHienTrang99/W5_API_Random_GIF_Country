@@ -30,9 +30,9 @@ function setup() {
     // createCanvas(windowWidth, windowHeight);
     createCanvas(windowWidth, windowHeight, WEBGL);
     offset = int(random(100));
-    btn = createButton("USE");
+    btn = createButton("Instructions");
     btn.mousePressed(mouseClicked);
-    btn.size(40,20);
+    btn.size(80,20);
     btn.position(10,10);
     btn.style("font-family", "Bodoni");
     btn.style("font-size", "10px");
@@ -97,7 +97,7 @@ function draw() {
 
 function getJSON() { // receive API gif
     offset = int(random(100));
-    let url = api + apiKey[currentKey] + "&offset=" + offset + "&q=" + query; // Gọi API 
+    let url = api + apiKey[currentKey] + "&offset=" + offset + "&q=" + query; 
     GIFsLoaded = 0;
     loadJSON(url, gotData, loadError); // gotData is called when API reacts
 }
