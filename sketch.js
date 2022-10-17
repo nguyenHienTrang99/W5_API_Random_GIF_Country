@@ -29,8 +29,9 @@ let btn;
 function setup() {
     // createCanvas(windowWidth, windowHeight);
     createCanvas(windowWidth, windowHeight, WEBGL);
-    offset = int(random(100));
+    let col = color(255,255,255,255);
     btn = createButton("Instructions");
+    btn.style('background-color', col);
     btn.mousePressed(mouseClicked);
     btn.size(80,20);
     btn.position(10,10);
